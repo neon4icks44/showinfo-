@@ -8,7 +8,7 @@
 	},
 	"id": "neon4ickz.showinfo",
 	"name": "ShowInfo",
-	"version": "v1.0.0",
+	"version": "v1.0.1",
 	"developer": "Neon4ickz",
 	"description": "Displays the level ID on the pause screen."
 }
