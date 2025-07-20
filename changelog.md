@@ -1,3 +1,6 @@
+# 1.0.5
+- Added platform Windows
+
 # 1.0.4
 - Adjusted text position for better visibility.
 - Clickable ID text now copies to clipboard with confirmation.
