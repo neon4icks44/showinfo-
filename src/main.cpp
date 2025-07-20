@@ -7,35 +7,29 @@ using namespace geode::prelude;
 class $modify(MyPauseLayer, PauseLayer) {
     // Объявляем методы как методы экземпляра
     void onCopyLevelID(CCObject* sender) {
-        auto level = GameManager::sharedState()->getPlayLayer()->m_level;
+        auto pl = PlayLayer::get();
+        if (!pl) return;
+        auto level = pl->m_level;
         if (level) {
-            geode::utils::clipboard::write(std::to_string(level->m_levelID));
-            geode::createQuickPopup(
-                "Success", "Level ID copied to clipboard!", "OK", nullptr, nullptr
-            );
+            geode::utils::clipboard::write(geode::utils::numToString(level->m_levelID.value()));
+            geode::Notification::create("Level ID copied to clipboard!")->show();
         } else {
             log::warn("Failed to get level ID: level is null");
         }
-    }
-
-    void onViewComments(CCObject* sender) {
-        // Заглушка для комментариев
-        geode::createQuickPopup(
-            "Comments", "Viewing comments is not implemented yet.", "OK", nullptr, nullptr
-        );
-        // В будущем здесь можно использовать GJCommentListLayer или API сервера
     }
 
     void customSetup() {
         PauseLayer::customSetup();
 
         // Получаем ID уровня
-        auto level = GameManager::sharedState()->getPlayLayer()->m_level;
-        std::string levelID = level ? std::to_string(level->m_levelID) : "Unknown";
+        auto pl = PlayLayer::get();
+        if (!pl) return;
+        auto level = pl->m_level;
+        std::string levelID = level ? geode::utils::numToString(level->m_levelID.value()) : "Unknown";
         log::info("Level ID: {}", levelID);
 
         // Создаём текстовое поле для ID уровня
-        auto label = CCLabelBMFont::create(("ID: " + levelID).c_str(), "goldFont.fnt");
+        auto label = CCLabelBMFont::create(fmt::format("ID: {}", levelID).c_str(), "goldFont.fnt");
         if (!label) {
             log::error("Failed to create label for Level ID");
             return;

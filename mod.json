@@ -1,5 +1,5 @@
 {
-	"geode": "4.6.3",
+	"geode": "4.4.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -10,5 +10,8 @@
 	"name": "ShowInfo",
 	"version": "v1.0.0",
 	"developer": "Neon4ickz",
-	"description": "Displays the level ID on the pause screen."
+	"description": "Displays the level ID on the pause screen.",
+	"dependencies": {
+		"geode.node-ids": ">=1.21.0"
+	}
 }
