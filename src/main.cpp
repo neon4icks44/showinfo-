@@ -7,42 +7,61 @@ using namespace geode::prelude;
 class $modify(MyPauseLayer, PauseLayer) {
     // Объявляем методы как методы экземпляра
     void onCopyLevelID(CCObject* sender) {
-        auto level = GameManager::sharedState()->getPlayLayer()->m_level;
+        auto pl = PlayLayer::get();
+        if (!pl) return;
+        auto level = pl->m_level;
         if (level) {
-            geode::utils::clipboard::write(std::to_string(level->m_levelID));
-            geode::createQuickPopup(
-                "Success", "Level ID copied to clipboard!", "OK", nullptr, nullptr
-            );
+            geode::utils::clipboard::write(geode::utils::numToString(level->m_levelID.value()));
+            geode::Notification::create("Level ID copied to clipboard!")->show();
         } else {
             log::warn("Failed to get level ID: level is null");
         }
     }
 
-    void onViewComments(CCObject* sender) {
-        // Заглушка для комментариев
-        geode::createQuickPopup(
-            "Comments", "Viewing comments is not implemented yet.", "OK", nullptr, nullptr
-        );
-        // В будущем здесь можно использовать GJCommentListLayer или API сервера
-    }
-
     void customSetup() {
         PauseLayer::customSetup();
 
+        auto background = this->getChildByType<cocos2d::extension::CCScale9Sprite>(0);
+        if (!background) {
+            log::error("Failed to find background");
+            return;
+        }
+
         // Получаем ID уровня
-        auto level = GameManager::sharedState()->getPlayLayer()->m_level;
-        std::string levelID = level ? std::to_string(level->m_levelID) : "Unknown";
+        auto pl = PlayLayer::get();
+        if (!pl) return;
+        auto level = pl->m_level;
+        std::string levelID = level ? geode::utils::numToString(level->m_levelID.value()) : "Unknown";
         log::info("Level ID: {}", levelID);
 
         // Создаём текстовое поле для ID уровня
-        auto label = CCLabelBMFont::create(("ID: " + levelID).c_str(), "goldFont.fnt");
+        auto menu = CCMenu::create();
+        if (!menu) {
+            log::error("Failed to create menu for Level ID");
+            return;
+        }
+        menu->setID("level-id-menu"_spr);
+
+        auto label = CCLabelBMFont::create(fmt::format("ID: {}", levelID).c_str(), "goldFont.fnt");
         if (!label) {
             log::error("Failed to create label for Level ID");
             return;
         }
-        label->setAnchorPoint({1.0f, 0.0f});
-        label->setPosition({CCDirector::sharedDirector()->getWinSize().width - 10, 10});
-        label->setScale(0.5f);
-        this->addChild(label);
+        label->setID("level-id-label"_spr);
+        
+        auto button = CCMenuItemSpriteExtra::create(label, this, menu_selector(MyPauseLayer::onCopyLevelID));
+        if (!button) {
+            log::error("Failed to create label for Level ID");
+            return;
+        }
+        button->setID("level-id-button"_spr);
+        button->setAnchorPoint({1.0f, 0.0f});
+
+        menu->setContentSize(button->getContentSize());
+        menu->setPosition({background->getContentSize().width - 10.0f, 10.0f});
+        menu->setAnchorPoint({0.0f, 1.0f});
+        menu->setScale(0.5f);
+        menu->addChild(button);
+        this->addChild(menu);
     }
 };
