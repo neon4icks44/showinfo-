@@ -21,6 +21,12 @@ class $modify(MyPauseLayer, PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
 
+        auto background = this->getChildByType<cocos2d::extension::CCScale9Sprite>(0);
+        if (!background) {
+            log::error("Failed to find background");
+            return;
+        }
+
         // Получаем ID уровня
         auto pl = PlayLayer::get();
         if (!pl) return;
@@ -51,8 +57,9 @@ class $modify(MyPauseLayer, PauseLayer) {
         button->setID("level-id-button"_spr);
         button->setAnchorPoint({1.0f, 0.0f});
 
-        menu->setContentSize(button->getContentSize() / 2.f);
-        menu->setPosition({CCDirector::sharedDirector()->getWinSize().width - 10.0f, 10.0f});
+        menu->setContentSize(button->getContentSize());
+        menu->setPosition({background.width - 15.0f, 10.0f});
+        menu->setAnchorPoint({0.0f, 1.0f});
         menu->setScale(0.5f);
         menu->addChild(button);
         this->addChild(menu);
