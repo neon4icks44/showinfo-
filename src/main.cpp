@@ -34,18 +34,21 @@ class $modify(MyPauseLayer, PauseLayer) {
             log::error("Failed to create menu for Level ID");
             return;
         }
+        menu->setID("level-id-menu"_spr);
 
         auto label = CCLabelBMFont::create(fmt::format("ID: {}", levelID).c_str(), "goldFont.fnt");
         if (!label) {
             log::error("Failed to create label for Level ID");
             return;
         }
+        label->setID("level-id-label"_spr);
         
         auto button = CCMenuItemSpriteExtra::create(label, this, menu_selector(MyPauseLayer::onCopyLevelID));
         if (!button) {
             log::error("Failed to create label for Level ID");
             return;
         }
+        button->setID("level-id-button"_spr);
 
         menu->setContentSize(button->getContentSize() / 2.f);
         menu->setAnchorPoint({1.0f, 0.0f});
