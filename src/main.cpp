@@ -58,7 +58,7 @@ class $modify(MyPauseLayer, PauseLayer) {
         button->setAnchorPoint({1.0f, 0.0f});
 
         menu->setContentSize(button->getContentSize());
-        menu->setPosition({background.width - 15.0f, 10.0f});
+        menu->setPosition({background->getContentSize().width - 15.0f, 10.0f});
         menu->setAnchorPoint({0.0f, 1.0f});
         menu->setScale(0.5f);
         menu->addChild(button);
