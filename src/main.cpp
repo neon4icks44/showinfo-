@@ -29,14 +29,29 @@ class $modify(MyPauseLayer, PauseLayer) {
         log::info("Level ID: {}", levelID);
 
         // Создаём текстовое поле для ID уровня
+        auto menu = CCMenu::create();
+        if (!menu) {
+            log::error("Failed to create menu for Level ID");
+            return;
+        }
+
         auto label = CCLabelBMFont::create(fmt::format("ID: {}", levelID).c_str(), "goldFont.fnt");
         if (!label) {
             log::error("Failed to create label for Level ID");
             return;
         }
-        label->setAnchorPoint({1.0f, 0.0f});
-        label->setPosition({CCDirector::sharedDirector()->getWinSize().width - 10, 10});
-        label->setScale(0.5f);
-        this->addChild(label);
+        
+        auto button = CCMenuItemSpriteExtra::create(label, this, menu_selector(MyPauseLayer::onCopyLevelID));
+        if (!button) {
+            log::error("Failed to create label for Level ID");
+            return;
+        }
+
+        menu->setContentSize(button->getContentSize() / 2.f);
+        menu->setAnchorPoint({1.0f, 0.0f});
+        menu->setPosition({CCDirector::sharedDirector()->getWinSize().width - 10.0f, 10.0f});
+        menu->setScale(0.5f);
+        menu->addChild(button);
+        this->addChild(menu);
     }
 };
