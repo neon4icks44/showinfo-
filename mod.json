@@ -1,0 +1,14 @@
+{
+	"geode": "4.6.3",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "neon4ickz.showinfo",
+	"name": "ShowInfo",
+	"version": "v1.0.0",
+	"developer": "Neon4ickz",
+	"description": "Displays the level ID on the pause screen."
+}
