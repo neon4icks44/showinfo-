@@ -49,9 +49,9 @@ class $modify(MyPauseLayer, PauseLayer) {
             return;
         }
         button->setID("level-id-button"_spr);
+        button->setAnchorPoint({1.0f, 0.0f});
 
         menu->setContentSize(button->getContentSize() / 2.f);
-        menu->setAnchorPoint({1.0f, 0.0f});
         menu->setPosition({CCDirector::sharedDirector()->getWinSize().width - 10.0f, 10.0f});
         menu->setScale(0.5f);
         menu->addChild(button);
