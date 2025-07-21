@@ -10,7 +10,7 @@
     "name": "ShowInfo",
     "version": "1.0.9",
     "developer": "Neon4ickz",
-    "description": "Displays the level ID on the pause screen with a clickable text to copy it to the clipboard.",
+    "description": "Displays the level ID on the pause screen with a clickable text to copy it to the clipboard using built-in game fonts, supporting Windows, Android, and macOS.",
     "dependencies": {
         "geode.node-ids": ">=1.21.0"
     }
