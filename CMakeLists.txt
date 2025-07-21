@@ -17,7 +17,7 @@ else()
     set(CMAKE_OSX_ARCHITECTURES "x86_64") # Для Windows
 endif()
 
-project(ShowInfo VERSION 1.0.4)
+project(ShowInfo VERSION 1.0.9)
 
 # Находим исходные файлы
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
