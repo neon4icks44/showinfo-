@@ -1,40 +1,46 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PauseLayer.hpp>
+#include <Geode/modify/MoreOptionsLayer.hpp>
 #include <Geode/ui/GeodeUI.hpp>
+#include <Geode/utils/general.hpp>
 
 using namespace geode::prelude;
 
 class $modify(MyPauseLayer, PauseLayer) {
-    // Объявляем методы как методы экземпляра
     void onCopyLevelID(CCObject* sender) {
         auto pl = PlayLayer::get();
         if (!pl) return;
         auto level = pl->m_level;
         if (level) {
-            geode::utils::clipboard::write(geode::utils::numToString(level->m_levelID.value()));
-            geode::Notification::create("Level ID copied to clipboard!")->show();
+            std::string id = std::to_string(level->m_levelID.value());
+            geode::utils::clipboard::write(id);
+            Notification::create("Level ID copied to clipboard!")->show();
         } else {
             log::warn("Failed to get level ID: level is null");
         }
     }
 
-    void customSetup() {
-        PauseLayer::customSetup();
+    void onShowHistory(CCObject* sender) {
+        Notification::create("History feature removed in this version")->show();
+    }
 
-        auto background = this->getChildByType<cocos2d::extension::CCScale9Sprite>(0);
+    void customSetup() {
+        log::info("Setting up custom PauseLayer");
+        PauseLayer::customSetup();
+        
+        // Используем getChildByIDRecursive для поиска фона
+        auto background = this->getChildByIDRecursive("background");
         if (!background) {
             log::error("Failed to find background");
             return;
         }
 
-        // Получаем ID уровня
         auto pl = PlayLayer::get();
         if (!pl) return;
         auto level = pl->m_level;
-        std::string levelID = level ? geode::utils::numToString(level->m_levelID.value()) : "Unknown";
+        std::string levelID = level ? std::to_string(level->m_levelID.value()) : "Unknown";
         log::info("Level ID: {}", levelID);
 
-        // Создаём текстовое поле для ID уровня
         auto menu = CCMenu::create();
         if (!menu) {
             log::error("Failed to create menu for Level ID");
@@ -42,16 +48,17 @@ class $modify(MyPauseLayer, PauseLayer) {
         }
         menu->setID("level-id-menu"_spr);
 
-        auto label = CCLabelBMFont::create(fmt::format("ID: {}", levelID).c_str(), "goldFont.fnt");
+        auto label = CCLabelBMFont::create(("ID: " + levelID).c_str(), "goldFont.fnt");
         if (!label) {
             log::error("Failed to create label for Level ID");
             return;
         }
         label->setID("level-id-label"_spr);
         
-        auto button = CCMenuItemSpriteExtra::create(label, this, menu_selector(MyPauseLayer::onCopyLevelID));
+        auto button = CCMenuItemSpriteExtra::create(
+            label, this, menu_selector(MyPauseLayer::onCopyLevelID));
         if (!button) {
-            log::error("Failed to create label for Level ID");
+            log::error("Failed to create button for Level ID");
             return;
         }
         button->setID("level-id-button"_spr);
@@ -63,5 +70,45 @@ class $modify(MyPauseLayer, PauseLayer) {
         menu->setScale(0.5f);
         menu->addChild(button);
         this->addChild(menu);
+    }
+};
+
+class $modify(MyMoreOptionsLayer, MoreOptionsLayer) {
+    bool init() {
+        if (!MoreOptionsLayer::init()) return false;
+        auto winSize = CCDirector::get()->getWinSize();
+
+        auto statsLabel = CCLabelBMFont::create("Stats", "goldFont.fnt");
+        auto statsButton = CCMenuItemSpriteExtra::create(
+            statsLabel, this, menu_selector(MyMoreOptionsLayer::onStats));
+        statsButton->setPosition(winSize.width / 2, winSize.height / 2 + 50);
+        statsButton->setID("stats-button"_spr);
+
+        // Используем getChildByIDRecursive для поиска меню
+        auto menu = this->getChildByIDRecursive("main-menu");
+        if (!menu) menu = this->getChildByIDRecursive("menu");
+        
+        if (menu) {
+            auto castedMenu = dynamic_cast<CCMenu*>(menu);
+            if (castedMenu) {
+                castedMenu->addChild(statsButton);
+            }
+        }
+
+        return true;
+    }
+
+    void onStats(CCObject* sender) {
+        auto statsManager = GameStatsManager::sharedState();
+        int levelCount = 0;
+        
+        if (statsManager) {
+            // Используем правильный ID для статистики уровней
+            levelCount = statsManager->getStat("1");
+        }
+
+        auto statsText = fmt::format("Levels Played: {}", levelCount);
+        auto alertLayer = FLAlertLayer::create("Game Stats", statsText.c_str(), "OK");
+        if (alertLayer) alertLayer->show();
     }
 };
