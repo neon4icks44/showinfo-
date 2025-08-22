@@ -28,7 +28,6 @@ class $modify(MyPauseLayer, PauseLayer) {
         log::info("Setting up custom PauseLayer");
         PauseLayer::customSetup();
         
-        // Используем getChildByIDRecursive для поиска фона
         auto background = this->getChildByIDRecursive("background");
         if (!background) {
             log::error("Failed to find background");
@@ -55,8 +54,7 @@ class $modify(MyPauseLayer, PauseLayer) {
         }
         label->setID("level-id-label"_spr);
         
-        auto button = CCMenuItemSpriteExtra::create(
-            label, this, menu_selector(MyPauseLayer::onCopyLevelID));
+        auto button = CCMenuItemSpriteExtra::create(label, this, menu_selector(MyPauseLayer::onCopyLevelID));
         if (!button) {
             log::error("Failed to create button for Level ID");
             return;
@@ -79,17 +77,15 @@ class $modify(MyMoreOptionsLayer, MoreOptionsLayer) {
         auto winSize = CCDirector::get()->getWinSize();
 
         auto statsLabel = CCLabelBMFont::create("Stats", "goldFont.fnt");
-        auto statsButton = CCMenuItemSpriteExtra::create(
-            statsLabel, this, menu_selector(MyMoreOptionsLayer::onStats));
+        auto statsButton = CCMenuItemSpriteExtra::create(statsLabel, this, menu_selector(MyMoreOptionsLayer::onStats));
         statsButton->setPosition(winSize.width / 2, winSize.height / 2 + 50);
         statsButton->setID("stats-button"_spr);
 
-        // Используем getChildByIDRecursive для поиска меню
         auto menu = this->getChildByIDRecursive("main-menu");
         if (!menu) menu = this->getChildByIDRecursive("menu");
         
         if (menu) {
-            auto castedMenu = dynamic_cast<CCMenu*>(menu);
+            auto castedMenu = typeinfo_cast<CCMenu*>(menu);
             if (castedMenu) {
                 castedMenu->addChild(statsButton);
             }
@@ -103,7 +99,6 @@ class $modify(MyMoreOptionsLayer, MoreOptionsLayer) {
         int levelCount = 0;
         
         if (statsManager) {
-            // Используем правильный ID для статистики уровней
             levelCount = statsManager->getStat("1");
         }
 
